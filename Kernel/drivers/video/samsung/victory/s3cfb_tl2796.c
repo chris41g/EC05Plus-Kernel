@@ -90,7 +90,7 @@ extern void init_mdnie_class(void);
 
 static struct s5p_lcd lcd;
 
-#if !defined(CONFIG_ARIES_NTT)
+//#if !defined(CONFIG_ARIES_NTT)
 static const unsigned short *p22Gamma_set[] = {        
                       
 	s6e63m0_22gamma_30cd,//0                               
@@ -121,7 +121,34 @@ static const unsigned short *p22Gamma_set[] = {
 };                                             
                                                
                                                 
-static const unsigned short *p19Gamma_set[] = {        
+static const unsigned short *p19Gamma_set[] = {  
+#ifdef CONFIG_VOODOO_COLOR_GAMMA_22_ONLY
+	s6e63m0_22gamma_30cd,//0                               
+	s6e63m0_22gamma_40cd,                         
+	s6e63m0_22gamma_70cd,                         
+	s6e63m0_22gamma_90cd,                         
+	s6e63m0_22gamma_100cd,                     
+	s6e63m0_22gamma_110cd,  //5                      
+	s6e63m0_22gamma_120cd,                        
+	s6e63m0_22gamma_130cd,                        
+	s6e63m0_22gamma_140cd,	                      
+	s6e63m0_22gamma_150cd,                    
+	s6e63m0_22gamma_160cd,   //10                     
+	s6e63m0_22gamma_170cd,                        
+	s6e63m0_22gamma_180cd,                        
+	s6e63m0_22gamma_190cd,	                      
+	s6e63m0_22gamma_200cd,                    
+	s6e63m0_22gamma_210cd,  //15                      
+	s6e63m0_22gamma_220cd,                        
+	s6e63m0_22gamma_230cd,                        
+	s6e63m0_22gamma_240cd,                        
+	s6e63m0_22gamma_250cd,                   
+	s6e63m0_22gamma_260cd,  //20                       
+	s6e63m0_22gamma_270cd,                        
+	s6e63m0_22gamma_280cd,                        
+	s6e63m0_22gamma_290cd,                        
+	s6e63m0_22gamma_300cd,//24                    
+#else      
 	s6e63m0_19gamma_30cd,	//0
 	//s6e63m0_19gamma_50cd,                         
 	s6e63m0_19gamma_40cd,     
@@ -149,7 +176,7 @@ static const unsigned short *p19Gamma_set[] = {
 	s6e63m0_19gamma_280cd,
 	s6e63m0_19gamma_290cd,
 	s6e63m0_19gamma_300cd,	//24
-}; 
+/*}; 
 #else // Modify NTTS1
 static const unsigned short *p22Gamma_set[] = {        
 	s6e63m0_22gamma_30cd,	 //0                    
@@ -206,8 +233,9 @@ static const unsigned short *p19Gamma_set[] = {
 	s6e63m0_19gamma_260cd,
 	s6e63m0_19gamma_280cd,
 	s6e63m0_19gamma_300cd, 	//24
-}; 
+}; */
 #endif
+};
 
 #ifdef CONFIG_FB_S3C_TL2796_ACL
 static const unsigned short *ACL_cutoff_set[] = {
@@ -238,8 +266,8 @@ static struct s3cfb_lcd s6e63m0 = {
 	.p_width = 52,
 	.p_height = 86,
 	.bpp = 24,
-	.freq = 60,
-	
+	.freq = 60, //Setting refresh rate will raise max framerate but too high can lead to color/brightness issues...not recommended until we get proper documentation
+
 	.timing = {
 		.h_fp = 16,
 		.h_bp = 16,
@@ -299,7 +327,7 @@ static void s6e63m0_panel_send_sequence(const unsigned short *wbuf)
 	mutex_lock(&spi_use);
 
 	gprintk("#################SPI start##########################\n");
-	
+
 	while ((wbuf[i] & DEFMASK) != ENDDEF) {
 		if ((wbuf[i] & DEFMASK) != SLEEPMSEC){
 			s6e63m0_spi_write(wbuf[i]);
@@ -308,7 +336,7 @@ static void s6e63m0_panel_send_sequence(const unsigned short *wbuf)
 			msleep(wbuf[i+1]);
 			i+=2;}
 	}
-	
+
 	gprintk("#################SPI end##########################\n");
 
 	mutex_unlock(&spi_use);
@@ -409,7 +437,7 @@ static ssize_t gammaset_file_cmd_store(struct device *dev,
         struct device_attribute *attr, const char *buf, size_t size)
 {
 	int value;
-	
+
     sscanf(buf, "%d", &value);
 
 	//printk(KERN_INFO "[gamma set] in gammaset_file_cmd_store, input value = %d \n",value);
@@ -585,7 +613,7 @@ static void wait_ldi_enable(void)
 
 		if(IsLDIEnabled())
 			break;
-		
+
 		msleep(10);
 	};
 }
@@ -621,7 +649,7 @@ static void update_brightness(int gamma)
 		s6e63m0_panel_send_sequence(p19Gamma_set[gamma]);
 	else
 		s6e63m0_panel_send_sequence(p22Gamma_set[gamma]);
-		
+
 	s6e63m0_panel_send_sequence(gamma_update); //gamma update
 }
 
@@ -632,7 +660,7 @@ static int s5p_bl_update_status(struct backlight_device* bd)
 	int level = 0;
 	int gamma_value = 0;
 	int gamma_val_x10 = 0;
-	
+
 	int i = 0;
 
 	for(i=0; i<100; i++)
@@ -641,10 +669,10 @@ static int s5p_bl_update_status(struct backlight_device* bd)
 
 		if(IsLDIEnabled())
 			break;
-		
+
 		msleep(10);
 	};
-	
+
 	if(IsLDIEnabled())
 	{
 	#if 0
@@ -691,7 +719,7 @@ static int s5p_bl_update_status(struct backlight_device* bd)
 		{
 			return 0;
 		}
-			
+
 	 	if(level)
 		{
 			#ifdef CONFIG_FB_S3C_MDNIE_TUNINGMODE_FOR_BACKLIGHT
@@ -702,7 +730,7 @@ static int s5p_bl_update_status(struct backlight_device* bd)
 				pre_val = -1;
 			}
 			#endif
-			
+
 			switch(level)
 			{
 				case  5:
@@ -719,7 +747,7 @@ static int s5p_bl_update_status(struct backlight_device* bd)
 							s6e63m0_panel_send_sequence(acl_cutoff_init);
 							msleep(20);
 						}
-						
+
 						if (cur_acl != 20)
 						{
 							s6e63m0_panel_send_sequence(ACL_cutoff_set[3]); //set 20% ACL
@@ -809,7 +837,7 @@ static int s5p_bl_update_status(struct backlight_device* bd)
 					}
 				#endif		
 #endif
-	
+
 					if(on_19gamma)
 						s6e63m0_panel_send_sequence(p19Gamma_set[gamma_value]);
 					else
@@ -823,7 +851,7 @@ static int s5p_bl_update_status(struct backlight_device* bd)
 							s6e63m0_panel_send_sequence(acl_cutoff_init);
 							msleep(20);
 						}
-						
+
 						if (gamma_value == 1)
 						{
 							if (cur_acl != 20)
@@ -890,15 +918,15 @@ static int s5p_bl_update_status(struct backlight_device* bd)
 					}
 #endif
 					gprintk("#################backlight end##########################\n");
-					
+
 					break;
 				}
 			}
-			
+
 			current_gamma_value = gamma_value;
 		}
 	}
-	
+
 	return 0;
 }
 

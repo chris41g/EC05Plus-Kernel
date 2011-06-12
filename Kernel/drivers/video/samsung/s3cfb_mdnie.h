@@ -1,4 +1,3 @@
-
 /* linux/drivers/video/samsung/s3cfb_mdnie.h
  *
  * Header file for Samsung (MDNIE) driver
@@ -347,3 +346,4 @@ int s3c_mdnie_stop(void);
 extern void mDNIe_Mode_Set(void);
 
 #endif
+
