@@ -616,10 +616,10 @@ service zygote /system/bin/app_process -Xzygote /system/bin --zygote --start-sys
 
 
 
-#	service bootsound /system/bin/playmp3
-#	user media
-#	group audio
-#	oneshot
+	service bootsound /system/bin/playmp3
+	user media
+	group audio
+	oneshot
 	
 service media /system/bin/mediaserver
     user media
@@ -632,9 +632,9 @@ service bootanim /system/bin/bootanimation
     oneshot
 
 
-#	service playlogos1 /system/bin/playlogos1
-#	user root
-#	oneshot
+	service playlogos1 /system/bin/playlogos1
+	user root
+	oneshot
 
 #to prevent lockup issue during poweron/off test
 service killmediaserver /system/bin/killmediaserver

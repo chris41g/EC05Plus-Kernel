@@ -17,6 +17,9 @@ on init
  
   	mount rfs /dev/block/stl9 /system check=no
 	mount ext4 /dev/block/stl9 /system check=no
+	mount rfs /dev/block/stl10 /data check=no
+	mount ext4 /dev/block/stl10 /data check=no
+
 	
 
 	mkdir /data/log 0777

@@ -1,13 +1,14 @@
 #!/sbin/busybox sh
 # Remount filesystems RW
-busybox mount -o remount,rw /
-busybox mount -o remount,rw /system
+/sbin/busybox  mount -o remount,rw /
+/sbin/busybox  mount -o remount,rw /system
 # Install Busybox
-rm -f /system/xbin/busybox
-rm -f /system/bin/busybox
+/sbin/busybox rm -f /system/xbin/busybox
+/sbin/busybox rm -f /system/bin/busybox
 /sbin/busybox --install -s /sbin
-/sbin/busybox --install -s /system/bin
-ln -s /system/xbin/busybox /system/bin/busybox
+/sbin/busybox ln -s /sbin/busybox /system/xbin/busybox
+/sbin/busybox ln /system/xbin/busybox /system/bin/busybox
+
 sync
 # Enable init.d support
 if [ -d /system/etc/init.d ]
@@ -36,10 +37,10 @@ chown root.system /res/images/*
 
 
 chmod 6755 /sbin/su
-rm /system/bin/su
-rm /system/xbin/su
-cat  /sbin/su /system/bin/su
-ln -s /system/bin/su /system/xbin/su
+/sbin/busybox rm /system/bin/su
+/sbin/busybox rm /system/xbin/su
+/sbin/busybox cp -f /sbin/su /system/bin/su
+/sbin/busybox ln /system/bin/su /system/xbin/su
 #setup proper passwd and group files for 3rd party root access
 # Thanks DevinXtreme
 
@@ -59,18 +60,18 @@ fi
 sync
 # patch to prevent certain malware apps
 if [ -f "/system/bin/profile" ]; then
-	rm /system/bin/profile
+	/sbin/busybox rm /system/bin/profile
 fi
 touch /system/bin/profile
 chmod 644 /system/bin/profile
 if [ ! -f "/system/app/Superuser.apk" ] && [ ! -f "/data/app/Superuser.apk" ] && [[ ! -f "/data/app/com.noshufou.android.su"* ]]; then
 	if [ -f "/system/app/Asphalt5_DEMO_ANMP_Samsung_D700_Sprint_ML.apk" ]; then
-		rm /system/app/Asphalt5_DEMO_ANMP_Samsung_D700_Sprint_ML.apk
+		/sbin/busybox /system/app/Asphalt5_DEMO_ANMP_Samsung_D700_Sprint_ML.apk
 	fi
 	if [ -f "/system/app/FreeHDGameDemos.apk" ]; then
-		rm /system/app/FreeHDGameDemos.apk
+		/sbin/busybox /system/app/FreeHDGameDemos.apk
 	fi
- 	busybox cp /sbin/Superuser.apk /system/app/Superuser.apk
+ 	/sbin/busybox cp /sbin/Superuser.apk /system/app/Superuser.apk
  fi
 
 #Minfree RamBoost
@@ -82,5 +83,5 @@ if [ -e /sys/module/lowmemorykiller/parameters/minfree ]; then
 fi
 sync
 # remount read only and continue
-busybox mount -o remount,ro /
-busybox mount -o remount,ro /system
+/sbin/busybox  mount -o remount,ro /
+/sbin/busybox  mount -o remount,ro /system
