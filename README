@@ -13,3 +13,4 @@ Wired Tether Fix -mkasick
 Ondemand default governor
 Wireless tether fix, TCPMSS Clamping -mkasick
 CIQ service disabled
+LZMA Compressed initramfs
