@@ -10,4 +10,5 @@ Minfree RAMBooster -darky
 DualFS RFS/EXT4 Support -DRockstar
 CWM 3.1.0.1 Recovery -DRockstar/Koush
 Wired Tether Fix -mkasick
-
+Switched default governor from conservative to Ondemand
+Wireless tether fix, TCPMSS Clamping -mkasick
