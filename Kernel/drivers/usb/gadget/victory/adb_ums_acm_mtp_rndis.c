@@ -82,7 +82,7 @@ void get_usb_serial(char *usb_serial_number)
 	char temp_serial_number[13] = {0};
 
 	u32 serial_number=0;
-	
+
 	serial_number = (system_serial_high << 16) + (system_serial_low >> 16);
 
 	sprintf(temp_serial_number,"D700%08x",serial_number);
@@ -226,7 +226,7 @@ static int __init android_bind_config(struct usb_configuration *c)
 		printk("[%s] Fail to adb_function_add()\n", __func__);
 		return ret;
 	}
-	
+
 	ret = mtp_function_add(c);
 	if (ret) {
 		printk("[%s] Fail to mtp_function_add()\n", __func__);
@@ -258,7 +258,7 @@ static int ums_only_bind_config(struct usb_configuration *c)
 	//dev->cdev->desc.bDeviceClass = USB_CLASS_MASS_STORAGE;
 	//dev->cdev->desc.bDeviceSubClass = 0x06;//US_SC_SCSI;
 	//dev->cdev->desc.bDeviceProtocol = 0x50;//US_PR_BULK;
-	
+
 	dev->cdev->desc.bDeviceClass = USB_CLASS_PER_INTERFACE;
 	dev->cdev->desc.bDeviceSubClass = 0;//US_SC_SCSI;
 	dev->cdev->desc.bDeviceProtocol = 0;//US_PR_BULK;
@@ -280,7 +280,7 @@ static int acm_ums_adb_bind_config(struct usb_configuration *c)
 	dev->cdev->desc.bDeviceClass	  = USB_CLASS_COMM;
 	dev->cdev->desc.bDeviceSubClass   = 0x00;
 	dev->cdev->desc.bDeviceProtocol   = 0x00;
-	
+
 	ret = acm_function_config_changed(dev->cdev, c);
 	if (ret) {
 		printk("[%s] Fail to acm_function_config_changed()\n", __func__);
@@ -296,6 +296,11 @@ static int acm_ums_adb_bind_config(struct usb_configuration *c)
 		printk("[%s] Fail to adb_function_config_changed()\n", __func__);
 		return ret;
 	}
+	ret = rndis_function_config_changed(dev->cdev, c);
+	if (ret) {
+		printk("[%s] Fail to rndis_function_config_changed()\n", __func__);
+		return ret;
+	}
 	return ret;
 }
 
@@ -309,7 +314,7 @@ static int acm_mtp_bind_config(struct usb_configuration *c)
 	dev->cdev->desc.bDeviceClass	  = USB_CLASS_COMM;
 	dev->cdev->desc.bDeviceSubClass   = 0x00;
 	dev->cdev->desc.bDeviceProtocol   = 0x00;
-	
+
 	ret = acm_function_config_changed(dev->cdev, c);
 	if (ret) {
 		printk("[%s] Fail to acm_function_config_changed()\n", __func__);
@@ -358,7 +363,7 @@ static int mtp_only_bind_config(struct usb_configuration *c)
 	dev->cdev->desc.bDeviceSubClass   = 0x06;
 #endif
 	dev->cdev->desc.bDeviceProtocol   = 0x01;
-	
+
 	ret = mtp_function_config_changed(dev->cdev, c);
 	if (ret) {
 		printk("[%s] Fail to mtp_function_config_changed()\n", __func__);
@@ -376,7 +381,7 @@ static int rndis_only_bind_config(struct usb_configuration *c)
 	dev->cdev->desc.bDeviceClass	  = USB_CLASS_COMM;
 	dev->cdev->desc.bDeviceSubClass   = 0;
 	dev->cdev->desc.bDeviceProtocol   = 0;
-	
+
 	ret = rndis_function_config_changed(dev->cdev, c);
 	if (ret) {
 		printk("[%s] Fail to rndis_function_config_changed()\n", __func__);
@@ -514,7 +519,7 @@ static int __init android_bind(struct usb_composite_dev *cdev)
 		device_desc.bcdDevice = __constant_cpu_to_le16(0x9999);
 	}
 #endif
-	
+
 	if (gadget_is_otg(cdev->gadget)) 
 		android_config.descriptors = otg_desc;
 
@@ -538,7 +543,7 @@ static int __init android_bind(struct usb_composite_dev *cdev)
 
 	usb_gadget_set_selfpowered(gadget);
 	dev->cdev = cdev;
-	
+
 	ret = usb_change_config(dev->cdev, &ums_only_config);
 	if (ret) {
 		printk("[%s] Fail to usb_change_config()\n", __func__);
@@ -550,10 +555,11 @@ static int __init android_bind(struct usb_composite_dev *cdev)
 	enable_adb(dev, USBSTATUS_ADB);
 #endif
 
+
 	INFO(cdev, "%s, version: " DRIVER_VERSION "\n", DRIVER_DESC);
 
 	return 0;
-	
+
 acm_fail:
 #if !defined(CONFIG_ARIES_NTT) // disable tethering xmoondash
 	gether_cleanup();
@@ -580,12 +586,13 @@ static struct usb_composite_driver android_usb_driver = {
 };
 
 int currentusbstatus=0;
-extern int oldusbstatus;
+//extern int oldusbstatus; mkasick fix
 int UmsCDEnable=0;
 int ums_mount_status = 0;
 int askonstatus = 0;
 int inaskonstatus=0;
 static int prev_status_before_adb;  // previous USB setting before using ADB
+static int prev_status_before_vtp;  // previous USB setting before using VTP
 static int prev_enable_status;  // previous USB setting
 extern int mtp_mode_on;
 extern int usb_on;
@@ -614,9 +621,9 @@ static void enable_adb(struct android_dev *dev, int enable)
 askonstatus=0;
 
 recheck:
-	oldusbstatus = currentusbstatus;
+//	oldusbstatus = currentusbstatus;
 	currentusbstatus=enable;
-	
+
 		ums_mount_status=0;
 
 		/* set product ID to the appropriate value */
@@ -661,6 +668,7 @@ recheck:
 		dev->adb_enabled = enable;
 #else
 		mtp_mode_on = 0;
+			prev_status_before_vtp = prev_enable_status;
         ret = usb_change_config(dev->cdev, &rndis_only_config);
 			if (ret) {
 				printk("[%s] Fail to rndis_only_config()\n", __func__);
@@ -681,6 +689,14 @@ recheck:
 				prev_enable_status = prev_status_before_adb = 0; //reset
 				goto recheck;
 				}
+			if(prev_enable_status == USBSTATUS_VTP && prev_status_before_vtp != USBSTATUS_UMS) { //mkasick fix
+				printk("[USB] %s - prev_status(0x%02x), prev_status_before_vtp setting(0x%02x)\n",
+						__func__, prev_enable_status, prev_status_before_vtp);
+				enable = prev_status_before_vtp;  // set previous status
+				prev_enable_status = prev_status_before_vtp = 0; //reset
+				goto recheck;
+				}
+
 
 			ret = usb_change_config(dev->cdev, &ums_only_config);
 			if (ret) {
@@ -720,7 +736,7 @@ extern void UsbIndicator(u8 state);
 static void disable_mtp(struct android_dev *dev)
 {
 	int ret;
-	
+
 	if (dev->cdev && dev->cdev->gadget) {
 	usb_gadget_disconnect(dev->cdev->gadget);
 	}
@@ -755,7 +771,7 @@ static void enable_askon(struct android_dev *dev, int enable)
 		printk("[USB] %s - enable(0x%02x), prev_status(0x%02x)\n", __func__, enable, prev_enable_status);
 		printk("Here is enable_askon@@@@\n");
 
-	
+
 	if (dev->cdev && dev->cdev->gadget) {
 	usb_gadget_disconnect(dev->cdev->gadget);
 	}
@@ -765,7 +781,7 @@ static void enable_askon(struct android_dev *dev, int enable)
 		Set_MAX8998_PM_ADDR(reg_address,&reg_value,1);
           
 
-	oldusbstatus = currentusbstatus;
+//	oldusbstatus = currentusbstatus; mkasick fix
 	currentusbstatus=enable;
 
 recheck:
@@ -843,7 +859,7 @@ recheck:
 */
 	if(!mtp_mode_on)
 		ap_usb_power_on(1);
-	
+
 		if (dev->cdev && dev->cdev->gadget ) {
 	          usb_gadget_connect(dev->cdev->gadget);
            	}
@@ -988,7 +1004,7 @@ static int __init android_probe(struct platform_device *pdev)
 
 		if (pdata->mtp_product_id)
 			dev->mtp_product_id = pdata->mtp_product_id;
-		
+
 		if (pdata->kies_product_id)
 			dev->kies_product_id = pdata->kies_product_id;
 

@@ -2,14 +2,6 @@
 # Remount filesystems RW
 /sbin/busybox  mount -o remount,rw /
 /sbin/busybox  mount -o remount,rw /system
-# Install Busybox
-/sbin/busybox rm -f /system/xbin/busybox
-/sbin/busybox rm -f /system/bin/busybox
-/sbin/busybox --install -s /sbin
-/sbin/busybox ln -s /sbin/busybox /system/xbin/busybox
-/sbin/busybox ln /system/xbin/busybox /system/bin/busybox
-
-sync
 # Enable init.d support
 if [ -d /system/etc/init.d ]
 then
@@ -34,13 +26,6 @@ done
 
 chown root.system /lib/modules/*
 chown root.system /res/images/*
-
-
-chmod 6755 /sbin/su
-/sbin/busybox rm /system/bin/su
-/sbin/busybox rm /system/xbin/su
-/sbin/busybox cp -f /sbin/su /system/bin/su
-/sbin/busybox ln /system/bin/su /system/xbin/su
 #setup proper passwd and group files for 3rd party root access
 # Thanks DevinXtreme
 

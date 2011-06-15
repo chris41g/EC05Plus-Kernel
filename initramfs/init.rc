@@ -293,9 +293,9 @@ loglevel 3
     
     chown root system /sbin
     chown root system /sbin/su
-    chown root system /sbin/busybox
+    chown root system /sbin/Superuser.apk
     chown root system /sbin/recovery
-    chown root system /sbin/sh
+    chown root system /sbin/keytimer
     chown root system /sbin/adbd
     chown root system /sbin/recovery.sh
     chown root system /sbin/remount
@@ -309,8 +309,17 @@ loglevel 3
     chmod 755 /sbin/recovery.sh
     chmod 755 /sbin/remount
     chmod 755 /sbin/userscript.sh
-
-
+    
+    symlink /sbin/recovery /sbin/busybox
+    symlink /sbin/recovery /sbin/sh
+    exec /sbin/busybox rm -f /system/bin/su &
+    exec /sbin/busybox rm -f /system/xbin/su &
+    exec /sbin/busybox rm -f /system/bin/busybox &
+    exec /sbin/busybox rm -f /system/xbin/busybox &
+    symlink /sbin/su /system/bin/su
+    symlink /sbin/su /system/xbin/su
+    exec /sbin/busybox --install -s /system/xbin &
+    symlink /system/xbin/busybox /system/bin/busybox
 
 #all operation with rootfs should be finished here, root partition will mounted read-only . d.moskvitin
     mount rootfs rootfs / ro remount
