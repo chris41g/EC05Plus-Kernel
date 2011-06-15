@@ -1,10 +1,13 @@
-How to compile: 
-If you do not have the toolchain then get it from codesourcery.com and install/extract.  Since I am compiling on an Ubuntu VM I use:
-
-http://www.codesourcery.com/public/gnu_toolchain/arm-none-linux-gnueabi/arm-2009q3-67-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
-
-Browse to Kernel/arch/arm/configs/ and edit victory_03_defconfig and change the path for CONFIG_INITRAMFS_SOURCE=
-to the absolute path of the initramfs.
-
-Then refer to the README.txt on what else you need to change.
+EC05Plus Kernel v1.0
+----------------------
+Voodoo Color -Supercurio
+Voodoo Sound 9 -Supercurio
+Keytimer Delay Patch -mkasick
+Init.d Support
+sysfs Scaling freqs fix -nullghost
+Custom bootanimation.zip support
+Minfree RAMBooster -darky
+DualFS RFS/EXT4 Support -DRockstar
+CWM 3.1.0.1 Recovery -DRockstar/Koush
+Wired Tether Fix -mkasick
 
