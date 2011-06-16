@@ -290,7 +290,7 @@ void ap_usb_power_on(int set_vaue)
 		}
 }
 
-
+		
 void usb_api_set_usb_switch(USB_SWITCH_MODE usb_switch)
 {
 	if(usb_switch == USB_SW_CP)
@@ -326,7 +326,7 @@ void Ap_Cp_Switch_Config(u16 ap_cp_mode)
 		default:
 			printk("Ap_Cp_Switch_Config error");
 	}
-
+		
 }
 
 
@@ -443,7 +443,7 @@ void uart_switching_value_update(int value)
 void switching_value_update(void)
 {
 	int index;
-
+	
 	for(index=0;index<5;index++)
 		switchinginitvalue[index] = usb_message[index];
 
@@ -537,7 +537,7 @@ void microusb_uart_status(int status)
 
 	if(!FSA9480_Get_JIG_UART_Status())	
 		return;
-
+	
 	if (sec_get_param_value)
 		sec_get_param_value(__SWITCH_SEL, &switch_sel);
 
@@ -632,7 +632,7 @@ void usb_switch_state(void)
 		sec_get_param_value(__SWITCH_SEL, &switch_sel);
 
 	usb_sel = switch_sel & (int)(USB_SEL_MASK);
-
+	
 	if(usb_sel)
 	{
 		usb_switch_mode(SWITCH_PDA);
@@ -652,7 +652,7 @@ void uart_insert_switch_state(void)
 
 	if(!connectivity_switching_init_state)
 		return;
-
+	
 	if (sec_get_param_value)
 		sec_get_param_value(__SWITCH_SEL, &switch_sel);
 
@@ -837,7 +837,7 @@ EXPORT_SYMBOL(FSA9480_ChangePathToAudio);
 #if 1
 static ssize_t DMport_switch_show(struct device *dev, struct device_attribute *attr, char *buf)
 {	
-
+		
 		return sprintf(buf, "%s[UsbMenuSel test] ready!! \n", buf);	
 }
 
@@ -883,7 +883,7 @@ static ssize_t DMport_switch_store(struct device *dev, struct device_attribute *
 		{
 			usb_switch_select(USBSTATUS_SAMSUNG_KIES);			
 		}
-
+		
 	return size;
 #endif
 }
@@ -895,7 +895,7 @@ static DEVICE_ATTR(DMport, S_IRUGO |S_IWUGO | S_IRUSR | S_IWUSR, DMport_switch_s
 //denis
 static ssize_t DMlog_switch_show(struct device *dev, struct device_attribute *attr, char *buf)
 {	
-
+		
 		return sprintf(buf, "%s[DMlog test] ready!! \n", buf);	
 }
 
@@ -915,8 +915,8 @@ static ssize_t DMlog_switch_store(struct device *dev, struct device_attribute *a
 		{
 			printk("DMlog selection : AP+CP\n");
 		}
-
-
+		
+		
 	return size;
 }
 
@@ -975,7 +975,7 @@ void UsbMenuSelStore(int sel)
 		switch_sel &= ~(int)USB_SAMSUNG_KIES_MASK;				
 		switch_sel |= (int)USB_ASKON_MASK;	
 		}
-
+	
 	if (sec_set_param_value)
 		sec_set_param_value(__SWITCH_SEL, &switch_sel);
 }
@@ -997,7 +997,7 @@ void PathSelStore(int sel)
 	else if(sel == CP_UART_MODE){
 		switch_sel &= ~UART_SEL_MASK;	
 		}
-
+	
 	if (sec_set_param_value)
 		sec_set_param_value(__SWITCH_SEL, &switch_sel);
 }
@@ -1007,13 +1007,13 @@ static ssize_t UsbMenuSel_switch_show(struct device *dev, struct device_attribut
 {	
 		if (currentusbstatus == USBSTATUS_UMS) 
 			return sprintf(buf, "%s[UsbMenuSel] UMS\n", buf);	
-
+		
 		else if (currentusbstatus == USBSTATUS_SAMSUNG_KIES) 
 			return sprintf(buf, "%s[UsbMenuSel] ACM_MTP\n", buf);	
-
+		
 		else if (currentusbstatus == USBSTATUS_MTPONLY) 
 			return sprintf(buf, "%s[UsbMenuSel] MTP\n", buf);	
-
+		
 		else if (currentusbstatus == USBSTATUS_ASKON) 
 			return sprintf(buf, "%s[UsbMenuSel] ASK\n", buf);	
 #if !defined(CONFIG_ARIES_NTT) // disable tethering xmoondash
@@ -1022,7 +1022,7 @@ static ssize_t UsbMenuSel_switch_show(struct device *dev, struct device_attribut
 #endif		
 		else if (currentusbstatus == USBSTATUS_ADB) 
 			return sprintf(buf, "%s[UsbMenuSel] ACM_ADB_UMS\n", buf);	
-
+	
 
 
 }
@@ -1042,7 +1042,7 @@ static ssize_t UsbMenuSel_switch_store(struct device *dev, struct device_attribu
 			usb_switch_select(USBSTATUS_MTPONLY);
 		}
                 #endif
-
+		
 		if (strncmp(buf, "UMS", 3) == 0)
 		{
 			UsbMenuSelStore(2);							
@@ -1370,7 +1370,7 @@ void FSA9480_Enable_CP_USB(u8 enable)
 		Set_MAX8998_PM_ADDR(reg_address,&reg_value,1);
 		check_reg = reg_value;
 		#endif
-
+	        
                 if(MicroJigUARTOffStatus)
                 {
                     /*    Added source for the below issue.(20100405_inchul)
@@ -1429,7 +1429,7 @@ void FSA9480_Enable_CP_USB(u8 enable)
 		    reg_value = ((0x2<<6)|reg_value);
 		    printk("denis_read 0x0D register 0x%x\n",reg_value);
 		    Set_MAX8998_PM_ADDR(reg_address,&reg_value,1);
-
+	
 		    mdelay(10);
 		    fsa9480_write(client, REGISTER_CONTROL, 0x1E);     
     }
@@ -1440,7 +1440,7 @@ void FSA9480_Enable_CP_USB(u8 enable)
 		reg_value = ((0x2<<6)|reg_value);
 		printk("denis_read 0x0D register 0x%x\n",reg_value);
 		Set_MAX8998_PM_ADDR(reg_address,&reg_value,1);
-
+	
 		mdelay(10);
 		fsa9480_write(client, REGISTER_CONTROL, 0x1E);	
 #endif
@@ -1465,7 +1465,7 @@ void FSA9480_Enable_SPK(u8 enable)
 		check_reg = reg_value;
 		Set_MAX8998_PM_ADDR(reg_address,&reg_value,1);
 		check_reg = reg_value;
-
+			
 		msleep(10);
 		fsa9480_write(client, REGISTER_MANUALSW1, 0x90);	// D+/- switching by V_Audio_L/R in HW03
 		msleep(10);
@@ -1731,7 +1731,7 @@ void FSA9480_ReadIntRegister(struct work_struct *work)
          #if 1 //20100520_inchul
 	 fsa9480_read(client, REGISTER_INTERRUPT2, &interrupt2);
  	 msleep(5);
-
+	
 	 fsa9480_read(client, REGISTER_ADC, &adc);
 
  	 msleep(5);   
@@ -1847,7 +1847,7 @@ void FSA9480_ReadIntRegister(struct work_struct *work)
 		fsa9480_device1 = 0;
 		fsa9480_device2 = 0;
 	}
-
+	
 	enable_irq(IRQ_FSA9480_INTB);
 }
 EXPORT_SYMBOL(FSA9480_ReadIntRegister);
@@ -1856,7 +1856,7 @@ irqreturn_t fsa9480_interrupt(int irq, void *ptr)
 {
 	printk("%s\n", __func__);
 	disable_irq_nosync(IRQ_FSA9480_INTB);
-
+	
 	uUSB_check_finished =0;  // reset
 
 	queue_work(fsa9480_workqueue, &fsa9480_work);
@@ -1953,7 +1953,7 @@ void fsa9480_init_status(void)
 u8 FSA9480_Get_I2C_USB_Status(void)
 {
 	u8 device1, device2;
-
+	
 	fsa9480_read(fsa9480_i2c_client, REGISTER_DEVICETYPE1, &device1);
   	msleep(5);
 	fsa9480_read(fsa9480_i2c_client, REGISTER_DEVICETYPE2, &device2);
@@ -2051,7 +2051,7 @@ void connectivity_switching_init(struct work_struct *ignored)
 	/*Turn off usb power when LPM mode*/
 	if(lpm_mode_check)
 		otg_phy_off();
-
+			
 		switching_value_update();	
 
 	if((switch_sel == 1) || (factoryresetstatus == 0xAE)){
@@ -2062,7 +2062,7 @@ void connectivity_switching_init(struct work_struct *ignored)
 		Get_MAX8998_PM_ADDR(reg_address, &reg_value, 1); // read 0x0D register
 		reg_value = reg_value & ~(0x1 << 7);
 		Set_MAX8998_PM_ADDR(reg_address,&reg_value,1);}
-
+		
 		UsbMenuSelStore(0);	
 	}
 	else{
@@ -2101,7 +2101,7 @@ void connectivity_switching_init(struct work_struct *ignored)
 				usb_switch_select(USBSTATUS_ASKON);
 			}			
 		}
-
+	
 
 	if(!FSA9480_Get_USB_Status()) {
 		s3c_usb_cable(1);
@@ -2224,7 +2224,7 @@ static int fsa9480_codec_probe(struct i2c_client *client, const struct i2c_devic
 
 	if (device_create_file(switch_dev, &dev_attr_uart_sel) < 0)
 		pr_err("Failed to create device file(%s)!\n", dev_attr_uart_sel.attr.name);
-
+	 
 	if (device_create_file(switch_dev, &dev_attr_usb_sel) < 0)
 		DEBUG_FSA9480("[FSA9480]Failed to create device file(%s)!\n", dev_attr_usb_sel.attr.name);
 
@@ -2241,7 +2241,7 @@ static int fsa9480_codec_probe(struct i2c_client *client, const struct i2c_devic
 
 	if (device_create_file(switch_dev, &dev_attr_UsbMenuSel) < 0)
 		pr_err("Failed to create device file(%s)!\n", dev_attr_UsbMenuSel.attr.name);
-
+	 
 	if (device_create_file(switch_dev, &dev_attr_AskOnMenuSel) < 0)
 		pr_err("Failed to create device file(%s)!\n", dev_attr_AskOnMenuSel.attr.name);
 
@@ -2253,16 +2253,16 @@ static int fsa9480_codec_probe(struct i2c_client *client, const struct i2c_devic
 
 	if (device_create_file(switch_dev, &dev_attr_FactoryResetValue) < 0)
 		pr_err("Failed to create device file(%s)!\n", dev_attr_FactoryResetValue.attr.name);		
-
+	
 	if (device_create_file(switch_dev, &dev_attr_AskOnStatus) < 0)
 		pr_err("Failed to create device file(%s)!\n", dev_attr_AskOnStatus.attr.name);			
-
+	
 	if (device_create_file(switch_dev, &dev_attr_MtpInitStatusSel) < 0)
 		pr_err("Failed to create device file(%s)!\n", dev_attr_MtpInitStatusSel.attr.name);			
-
+	
 	if (device_create_file(switch_dev, &dev_attr_AskInitStatusSel) < 0)
 		pr_err("Failed to create device file(%s)!\n", dev_attr_AskInitStatusSel.attr.name);	
-
+	
 	if (device_create_file(switch_dev, &dev_attr_tethering) < 0)		
 		pr_err("Failed to create device file(%s)!\n", dev_attr_tethering.attr.name);
 
@@ -2276,7 +2276,7 @@ static int fsa9480_codec_probe(struct i2c_client *client, const struct i2c_devic
 	#if 1 //20100605_inchul
 		wake_lock_init(&cable_wake_lock, WAKE_LOCK_SUSPEND, "wimax_cable_connected");
 	#endif
-
+	 
 	 init_waitqueue_head(&usb_detect_waitq); 
 	 INIT_WORK(&fsa9480_work, FSA9480_ReadIntRegister);
 	 fsa9480_workqueue = create_singlethread_workqueue("fsa9480_workqueue");
