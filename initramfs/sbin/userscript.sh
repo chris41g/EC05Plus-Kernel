@@ -2,6 +2,7 @@
 # Remount filesystems RW
 /sbin/busybox  mount -o remount,rw /
 /sbin/busybox  mount -o remount,rw /system
+/sbin/busybox --install -s /system/xbin
 # Enable init.d support
 if [ -d /system/etc/init.d ]
 then
