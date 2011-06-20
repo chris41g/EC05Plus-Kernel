@@ -335,33 +335,35 @@ on boot
 
 # Set timeout value for rmnet stats.
     write /sys/devices/virtual/net/rmnet0/timeout_suspend 5000000
-
+    
 # Define the oom_adj values for the classes of processes that can be
 # killed by the kernel.  These are used in ActivityManagerService.
     setprop ro.FOREGROUND_APP_ADJ 0
     setprop ro.VISIBLE_APP_ADJ 1
-    setprop ro.SECONDARY_SERVER_ADJ 2
-    setprop ro.BACKUP_APP_ADJ 2
-    setprop ro.HOME_APP_ADJ 4
+    setprop ro.PERCEPTIBLE_APP_ADJ 2
+    setprop ro.HEAVY_WEIGHT_APP_ADJ 3
+    setprop ro.SECONDARY_SERVER_ADJ 4
+    setprop ro.BACKUP_APP_ADJ 5
+    setprop ro.HOME_APP_ADJ 6
     setprop ro.HIDDEN_APP_MIN_ADJ 7
-    setprop ro.CONTENT_PROVIDER_ADJ 14
     setprop ro.EMPTY_APP_ADJ 15
 
 # Define the memory thresholds at which the above process classes will
 # be killed.  These numbers are in pages (4k).
     setprop ro.FOREGROUND_APP_MEM 2560
     setprop ro.VISIBLE_APP_MEM 4096
-    setprop ro.SECONDARY_SERVER_MEM 6144
-    setprop ro.BACKUP_APP_MEM 6144
-    setprop ro.HOME_APP_MEM 6144
-    setprop ro.HIDDEN_APP_MEM 10240
-    setprop ro.CONTENT_PROVIDER_MEM 11264
-    setprop ro.EMPTY_APP_MEM 12288
+    setprop ro.PERCEPTIBLE_APP_MEM 6144
+    setprop ro.HEAVY_WEIGHT_APP_MEM 6144
+    setprop ro.SECONDARY_SERVER_MEM 17408
+    setprop ro.BACKUP_APP_MEM 17408
+    setprop ro.HOME_APP_MEM 17408
+    setprop ro.HIDDEN_APP_MEM 19456
+    setprop ro.EMPTY_APP_MEM 23552
 
 # Write value must be consistent with the above properties.
 # Note that the driver only supports 6 slots, so we have HOME_APP at the
 # same memory level as services.
-    write /sys/module/lowmemorykiller/parameters/adj 0,1,2,7,14,15
+    write /sys/module/lowmemorykiller/parameters/adj 0,1,2,4,7,15
 
     write /proc/sys/vm/overcommit_memory 1
     write /proc/sys/vm/min_free_order_shift 4
@@ -371,8 +373,44 @@ on boot
     write /proc/1/oom_adj -16
 
     # Tweak background writeout
-    # write /proc/sys/vm/dirty_expire_centisecs 200
-    # write /proc/sys/vm/dirty_background_ratio  5
+    write /proc/sys/vm/dirty_expire_centisecs 500
+    write /proc/sys/vm/dirty_background_ratio  5
+    write /proc/sys/vm/oom_kill_allocating_task 1
+    write /proc/sys/vm/dirty_writeback_centisecs 1000
+    write /proc/sys/vm/dirty_ratio 90
+    write /proc/sys/vm/vfs_cache_pressure 10
+    write /proc/sys/kernel/sched_autogroup_enabled 1
+    write /proc/sys/kernel/sched_latency_ns 18000000
+    write /proc/sys/kernel/sched_wakeup_granularity_ns 3000000
+    write /proc/sys/kernel/sched_min_granularity_ns 1500000
+    write /proc/sys/kernel/msgmni 2048
+    write /proc/sys/kernel/msgmax 64000
+    write /proc/sys/kernel/shmmax 318984192
+    write /proc/sys/kernel/shmall 86530
+    write /proc/sys/kernel/sem 500 512000 64 2048
+    write /proc/sys/kernel/sched_compat_yield 1
+    write /proc/sys/kernel/sched_shares_ratelimit 256000
+    write /proc/sys/kernel/sched_child_runs_first 0
+    write /proc/sys/kernel/hung_task_timeout_secs 0
+    write /proc/sys/net/core/wmem_default 262144
+    write /proc/sys/net/core/rmem_default 262144
+    write /proc/sys/net/core/wmem_max 262144
+    write /proc/sys/net/core/rmem_max 262144
+    write /proc/sys/net/ipv4/tcp_mem 4096 4096 4096
+    write /proc/sys/net/ipv4/tcp_rmem 4096 87380 8388608
+    write /proc/sys/net/ipv4/tcp_wmem 4096 87380 8388608
+    write /proc/sys/net/ipv4/tcp_keepalive_time 1200
+    write /proc/sys/net/ipv4/tcp_keepalive_intvl 30
+    write /proc/sys/net/ipv4/tcp_keepalive_probes 5
+    write /proc/sys/net/ipv4/tcp_timestamps 0
+    write /proc/sys/net/ipv4/tcp_tw_reuse 1
+    write /proc/sys/net/ipv4/tcp_tw_recycle 1
+    write /proc/sys/net/ipv4/tcp_window_scaling 1
+    write /proc/sys/net/ipv4/tcp_sack 1
+    write /proc/sys/net/ipv4/tcp_no_metrics_save 1
+    write /proc/sys/net/ipv4/tcp_congestion_control cubic	
+    write /proc/sys/net/core/netdev_max_backlog 2500
+    write /proc/sys/net/ipv4/route.flush 1
 
    # permissions 
 
@@ -476,17 +514,20 @@ on boot
 # Network Tweaks - Thanks k0nane.
 # Define TCP buffer sizes for various networks
 #   ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax,
-#    setprop net.tcp.buffersize.default 4096,87380,110208,4096,16384,110208
-    setprop net.tcp.buffersize.default 4096,87380,16777216,4096,65536,16777216
-#    setprop net.tcp.buffersize.wifi    4095,65535,196608,4096,16384,110208
-    setprop net.tcp.buffersize.wifi    4096,87380,16777216,4096,65535,16777216
-#    setprop net.tcp.buffersize.umts    4094,87380,110208,4096,16384,110208
-    setprop net.tcp.buffersize.umts    4096,87380,16777216,4096,65536,16777216
+    setprop net.tcp.buffersize.default 4096,87380,110208,4096,16384,110208
+    setprop net.tcp.buffersize.wifi    4095,87380,110208,4096,16384,110208
+    setprop net.tcp.buffersize.umts    4094,87380,110208,4096,16384,110208
     setprop net.tcp.buffersize.edge    4093,26280,35040,4096,16384,35040
     setprop net.tcp.buffersize.gprs    4092,8760,11680,4096,8760,11680
-#    setprop net.tcp.buffersize.wimax   4092,87380,1520768,4092,16384,1520768
-    setprop net.tcp.buffersize.wimax   4096,87380,16777216,4096,65536,16777216
-
+    setprop net.tcp.buffersize.wimax   4092,87380,1520768,4092,16384,1520768
+    setprop dalvik.vm.startheapsize 8m
+    setprop wifi.supplicant_scan_interval 180
+    setprop windowsmgr.max_events_per_sec 60
+    setprop net.cdma.rtsp.proxy.addr 0.0.0.0
+    setprop net.cdma.rtsp.proxy.port 0
+    setprop net.cdma.httppd.proxy.addr 0.0.0.0
+    setprop net.cdma.httppd.proxy.port 0
+    setprop dalvik.vm.heapsize 44m
 
 # +++++++++++++++++++++++++++++++++++++++++++
 

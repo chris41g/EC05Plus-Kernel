@@ -5,7 +5,6 @@ on init
 	export ANDROID_ROOT /system
 
 	mkdir /system
-	mkdir /data
 	mount tmpfs nodev /tmp
 
 	insmod /lib/modules/fsr.ko
@@ -17,13 +16,7 @@ on init
  
   	mount rfs /dev/block/stl9 /system check=no
 	mount ext4 /dev/block/stl9 /system check=no
-	mount rfs /dev/block/stl10 /data check=no
-	mount ext4 /dev/block/stl10 /data check=no
-
 	
-
-	mkdir /data/log 0777
-	mkdir /data/anr 0777
 
 	chmod 0666 /dev/log/radio
 	chmod 0666 /dev/log/main
@@ -41,7 +34,7 @@ on boot
 service debuggerd /system/bin/debuggerd
 
 #service console /bin/sh
-service console /system/bin/sh
+service console /sbin/sh
 	console
 
 service playlpm /system/bin/playlpm

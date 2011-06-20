@@ -58,15 +58,6 @@ if [ ! -f "/system/app/Superuser.apk" ] && [ ! -f "/data/app/Superuser.apk" ] &&
 	fi
  	/sbin/busybox cp /sbin/Superuser.apk /system/app/Superuser.apk
  fi
-
-#Minfree RamBoost
-if [ -e /sys/module/lowmemorykiller/parameters/minfree ]; then
-    echo "Modifying minfree parameters"
-        echo "2560,4096,6144,17408,19456,23552" > /sys/module/lowmemorykiller/parameters/minfree
-    else
-        echo "minfree not found"
-fi
-sync
 # remount read only and continue
 /sbin/busybox  mount -o remount,ro /
 /sbin/busybox  mount -o remount,ro /system
